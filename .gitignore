@@ -1,0 +1,87 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+pip-selfcheck.json
+
+# Node / JS
+node_modules/
+.npm
+.yarn/
+dist/
+.next/
+.nuxt/
+.output/
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.secret
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+*.sql.bak
+
+# File storage & uploads
+uploads/
+media/
+storage/
+*.zip
+*.tar.gz
+*.7z
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test / Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+coverage/
+.nyc_output/
+
+# Docker
+docker-compose.override.yml
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# MinIO / S3 local data
+minio-data/
+
+# Generated SIP/AIP packages (không commit file ZIP lớn)
+packages/
+output/
+sip_output/
+aip_output/

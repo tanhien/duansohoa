@@ -11,10 +11,22 @@ Module 1 nhận vào danh sách hồ sơ + file PDF đã scan. OCR sẽ đọc t
 
 ## Luồng xử lý OCR
 
+**Tham số đầu vào khi gọi OCR** (truyền từ Module 1, không tự OCR lấy):
+
+| Tham số | Ý nghĩa | Ví dụ |
+| --- | --- | --- |
+| `filePath` | Đường dẫn file PDF scan trên MinIO/local | `uploads/phong_g09/hs_2025_001/van_ban_001.pdf` |
+| `fileCode` | Mã hồ sơ chứa tài liệu này | `G09.2025.01.001` |
+| `docOrdinal` | Số thứ tự tài liệu trong hồ sơ | `3` |
+
 ```text
+[fileCode + docOrdinal + filePath]
+         ↓
 PDF scan → Phát hiện loại tài liệu → OCR từng trang → Trích xuất trường → Validate → Lưu nháp
-                                          ↓ thất bại
-                                     Gắn cờ "cần nhập thủ công"
+                                                            ↓ thất bại
+                                                       Gắn cờ "cần nhập thủ công"
+         ↓ output
+[extractedFields + packedFileName + confidenceLevel]
 ```
 
 ---
@@ -236,6 +248,51 @@ Sau khi OCR trích xuất, hệ thống kiểm tra trước khi lưu nháp:
 
 ---
 
+## Quy tắc đặt tên file đóng gói (`packedFileName`)
+
+Trường `packedFileName` là **địa chỉ tài liệu gốc** – tên file sẽ được dùng khi copy vào thư mục `representations/rep1/data/` trong gói SIP/AIP.
+
+### Công thức
+
+```text
+packedFileName = {fileCode}.{docOrdinal:04d}.{ext}
+```
+
+| Thành phần | Ý nghĩa | Lấy từ |
+| --- | --- | --- |
+| `fileCode` | Mã hồ sơ (arcFileCode) | Tham số đầu vào từ Module 1 |
+| `docOrdinal` | Số thứ tự tài liệu trong hồ sơ, **4 chữ số, bù 0** | Tham số đầu vào từ Module 1 |
+| `ext` | Phần mở rộng file | Luôn là `pdf` (tài liệu phải chuyển sang PDF/A) |
+
+### Ví dụ
+
+| `fileCode` | `docOrdinal` | `packedFileName` |
+| --- | --- | --- |
+| `G09.2025.01.001` | `1` | `G09.2025.01.001.0001.pdf` |
+| `G09.2025.01.001` | `12` | `G09.2025.01.001.0012.pdf` |
+| `BNV.2024.02.005` | `3` | `BNV.2024.02.005.0003.pdf` |
+
+### Vị trí trong gói SIP
+
+```text
+{UUID}/
+  representations/
+    rep1/
+      data/
+        G09.2025.01.001.0001.pdf   ← packedFileName của tài liệu #1
+        G09.2025.01.001.0002.pdf   ← packedFileName của tài liệu #2
+        G09.2025.01.001.0003.pdf   ← packedFileName của tài liệu #3
+      metadata/
+        descriptive/
+          EAD_doc_G09.2025.01.001.0001.xml
+        preservation/
+          PREMIS_{uuid}.xml
+```
+
+> **Lý do bù 0 thành 4 chữ số:** Đảm bảo thứ tự sắp xếp tên file theo alphabet = thứ tự tài liệu trong hồ sơ (tối đa 9999 tài liệu/hồ sơ).
+
+---
+
 ## Đầu ra của bước OCR
 
 Mỗi file scan sau OCR sinh ra một object JSON nháp:
@@ -244,6 +301,9 @@ Mỗi file scan sau OCR sinh ra một object JSON nháp:
 {
   "fileId": "uuid-...",
   "filePath": "uploads/HS001/van_ban_001.pdf",
+  "fileCode": "G09.2025.01.001",
+  "docOrdinal": 1,
+  "packedFileName": "G09.2025.01.001.0001.pdf",
   "docType": "vanban",
   "confidenceLevel": 87,
   "status": "draft",
@@ -318,6 +378,7 @@ phục vụ kết nối, chia sẻ dữ liệu với các bộ, ngành, địa p
 | `mode` | `01` | Không có dấu MẬT/TỐI MẬT | — |
 | `source` | `0` | Văn bản đi (do cơ quan ban hành) | — |
 | `confidenceLevel` | `93` | Trung bình có trọng số các trường | — |
+| **`packedFileName`** | **`G09.2025.01.001.0001.pdf`** | **Tính từ `fileCode` + `docOrdinal` truyền vào** | **—** |
 
 > **Ghi chú regex đặc biệt:** Số văn bản dạng `09/2025/QĐ-TTg` có 3 phần ngăn cách bởi `/`.  
 > Pattern mở rộng cần bắt cả trường hợp này:
@@ -333,6 +394,9 @@ RE_CODE_EXT = r'(?:Số[:\s]*)?(\d+)/(\d{4})/([A-ZĐÀÁÂÃÈÉÊÌÍÒÓÔÕÙ
 {
   "fileId": "uuid-A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
   "filePath": "uploads/phong_g09/hs_2025_001/09-2025-QD-TTg.pdf",
+  "fileCode": "G09.2025.01.001",
+  "docOrdinal": 1,
+  "packedFileName": "G09.2025.01.001.0001.pdf",
   "docType": "vanban",
   "confidenceLevel": 93,
   "status": "draft",
@@ -350,8 +414,7 @@ RE_CODE_EXT = r'(?:Số[:\s]*)?(\d+)/(\d{4})/([A-ZĐÀÁÂÃÈÉÊÌÍÒÓÔÕÙ
     "pageAmount": 3,
     "language": "01",
     "mode": "01",
-    "source": "0",
-    "docOrdinal": 1
+    "source": "0"
   },
   "fieldConfidence": {
     "organName": 98,

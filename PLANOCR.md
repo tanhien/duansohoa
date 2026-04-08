@@ -277,6 +277,98 @@ Mỗi file scan sau OCR sinh ra một object JSON nháp:
 
 ---
 
+## Ví dụ thực tế – OCR file `09/2025/QĐ-TTg`
+
+> **File gốc:** `FRD/09-2025-QD-TTg.pdf` – Quyết định 09/2025/QĐ-TTg của Thủ tướng Chính phủ  
+> **Loại tài liệu phát hiện:** Văn bản hành chính → áp dụng **Bộ B**  
+> **Dấu hiệu nhận dạng:** Có quốc hiệu, có "QUYẾT ĐỊNH" in hoa, có số ký hiệu dạng `09/2025/QĐ-TTg`
+
+### Nội dung văn bản (nhận biết qua OCR)
+
+```text
+THỦ TƯỚNG CHÍNH PHỦ          CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM
+                                   Độc lập - Tự do - Hạnh phúc
+Số: 09/2025/QĐ-TTg            Hà Nội, ngày 14 tháng 4 năm 2025
+
+                            QUYẾT ĐỊNH
+Sửa đổi, bổ sung Quyết định số 20/2020/QĐ-TTg ngày 22 tháng 7 năm 2020
+của Thủ tướng Chính phủ về mã định danh điện tử của các cơ quan, tổ chức
+phục vụ kết nối, chia sẻ dữ liệu với các bộ, ngành, địa phương
+                                           ...
+                                    KT. THỦ TƯỚNG
+                                    PHÓ THỦ TƯỚNG
+                                    Nguyễn Chí Dũng
+```
+
+### Kết quả trích xuất (Bộ B)
+
+| Trường | Giá trị OCR trích xuất | Nguồn nhận dạng | Confidence |
+| --- | --- | --- | --- |
+| `organName` | `THỦ TƯỚNG CHÍNH PHỦ` | Góc trên trái | 98% |
+| `codeNumber` | `09` | Regex `RE_CODE` → phần số trước `/2025` | 99% |
+| `codeNotation` | `QĐ-TTg` | Regex `RE_CODE` → phần sau `/2025/` | 99% |
+| `issuedDate` | `14/04/2025` | Regex `RE_PLACE_DATE` → "ngày 14 tháng 4 năm 2025" | 97% |
+| `typeName` | `QUYẾT ĐỊNH` | Tiêu đề in hoa ở trung tâm trang | 99% |
+| `typeDoc` | `02` | Mapping: QUYẾT ĐỊNH → `02` | — |
+| `subject` | `Sửa đổi, bổ sung Quyết định số 20/2020/QĐ-TTg ... chia sẻ dữ liệu với các bộ, ngành, địa phương` | Dòng in đậm sau "QUYẾT ĐỊNH" | 91% |
+| `autograph` | `Nguyễn Chí Dũng` | Tên in dưới chữ ký | 88% |
+| `process` | `KT. THỦ TƯỚNG / PHÓ THỦ TƯỚNG` | Dòng trên tên người ký | 85% |
+| `pageAmount` | `3` | Đếm tổng số trang PDF | 100% |
+| `language` | `01` | Suy từ văn bản (tiếng Việt) | — |
+| `mode` | `01` | Không có dấu MẬT/TỐI MẬT | — |
+| `source` | `0` | Văn bản đi (do cơ quan ban hành) | — |
+| `confidenceLevel` | `93` | Trung bình có trọng số các trường | — |
+
+> **Ghi chú regex đặc biệt:** Số văn bản dạng `09/2025/QĐ-TTg` có 3 phần ngăn cách bởi `/`.  
+> Pattern mở rộng cần bắt cả trường hợp này:
+
+```python
+RE_CODE_EXT = r'(?:Số[:\s]*)?(\d+)/(\d{4})/([A-ZĐÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂẮẶĐÊỐỜỢƯỚỮ\-]+)'
+# group(1) = codeNumber ("09"), group(2) = năm ("2025"), group(3) = codeNotation ("QĐ-TTg")
+```
+
+### JSON output
+
+```json
+{
+  "fileId": "uuid-A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
+  "filePath": "uploads/phong_g09/hs_2025_001/09-2025-QD-TTg.pdf",
+  "docType": "vanban",
+  "confidenceLevel": 93,
+  "status": "draft",
+  "needsReview": false,
+  "extractedFields": {
+    "organName": "THỦ TƯỚNG CHÍNH PHỦ",
+    "codeNumber": "09",
+    "codeNotation": "QĐ-TTg",
+    "issuedDate": "14/04/2025",
+    "typeName": "QUYẾT ĐỊNH",
+    "typeDoc": "02",
+    "subject": "Sửa đổi, bổ sung Quyết định số 20/2020/QĐ-TTg ngày 22 tháng 7 năm 2020 của Thủ tướng Chính phủ về mã định danh điện tử của các cơ quan, tổ chức phục vụ kết nối, chia sẻ dữ liệu với các bộ, ngành, địa phương",
+    "autograph": "Nguyễn Chí Dũng",
+    "process": "KT. THỦ TƯỚNG / PHÓ THỦ TƯỚNG",
+    "pageAmount": 3,
+    "language": "01",
+    "mode": "01",
+    "source": "0",
+    "docOrdinal": 1
+  },
+  "fieldConfidence": {
+    "organName": 98,
+    "codeNumber": 99,
+    "codeNotation": 99,
+    "issuedDate": 97,
+    "typeName": 99,
+    "subject": 91,
+    "autograph": 88,
+    "process": 85
+  },
+  "flaggedFields": []
+}
+```
+
+---
+
 ## Thư viện OCR đề xuất
 
 | Thư viện | Dùng cho | Ghi chú |

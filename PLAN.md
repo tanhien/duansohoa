@@ -263,7 +263,7 @@ G09.01.001    → Mã cấp 3: đơn vị trực thuộc cấp 2 (ví dụ: phò
 | G18 | Bộ Y tế | |
 | G19 | Ngân hàng Nhà nước Việt Nam | |
 | G20 | Thanh tra Chính phủ | |
-| G21 | Ủy ban Dân tộc và Tôn giáo | |
+| G21 | Ban Dân tộc và Tôn giáo | Đổi tên theo QĐ 09/2025 (từ "Ủy ban Dân tộc") |
 | G22 | Văn phòng Chính phủ | |
 | G27 | Đài Tiếng nói Việt Nam | |
 | G28 | Đài Truyền hình Việt Nam | |
@@ -271,12 +271,11 @@ G09.01.001    → Mã cấp 3: đơn vị trực thuộc cấp 2 (ví dụ: phò
 | G31 | Viện Hàn lâm Khoa học và Công nghệ Việt Nam | |
 | G32 | Viện Hàn lâm Khoa học xã hội Việt Nam | |
 | G35 | Ủy ban An toàn giao thông Quốc gia | |
-| G36 | Ủy ban Quản lý vốn nhà nước tại doanh nghiệp | |
-| G38 | Ủy ban bảo vệ sông Mê Công Việt Nam | Thêm mới QĐ 09/2025 |
-| G39 | Ủy ban đánh giá trữ lượng khoáng sản quốc gia | Thêm mới QĐ 09/2025 |
+| G38 | Ủy ban sông Mê Công Việt Nam | Thêm mới QĐ 09/2025 |
+| G39 | Hội đồng đánh giá trữ lượng khoáng sản quốc gia | Thêm mới QĐ 09/2025 |
 | G40 | Ủy ban chỉ đạo quốc gia thực hiện Chiến lược PTBV kinh tế biển đến 2045 | Thêm mới QĐ 09/2025 |
 
-> **Lưu ý QĐ 09/2025:** Xóa G04, G05, G07, G13, G23, G24, G25, G26, G34, G37 do sáp nhập bộ. Thêm UBND thành phố Huế (H57), HĐND thành phố Huế (K57).
+> **Lưu ý QĐ 09/2025:** Dự trữ (xóa khỏi danh sách hoạt động) các mã G04, G05, G07, G13, G14, G23, G24, G25, G26, G34, G36, G37 do sáp nhập/giải thể bộ. Đổi tên H57 → UBND thành phố Huế, K57 → HĐND thành phố Huế.
 
 #### Bảng H – UBND các tỉnh, thành phố
 
@@ -296,7 +295,7 @@ G09.01.001    → Mã cấp 3: đơn vị trực thuộc cấp 2 (ví dụ: phò
 | H12 | Cà Mau | H33 | Kiên Giang | H54 | Thái Bình |
 | H13 | Cần Thơ | H34 | Kon Tum | H55 | Thái Nguyên |
 | H14 | Cao Bằng | H35 | Lai Châu | H56 | Thanh Hóa |
-| H15 | Đắk Lắk | H36 | Lâm Đồng | H57 | Thừa Thiên Huế |
+| H15 | Đắk Lắk | H36 | Lâm Đồng | H57 | thành phố Huế |
 | H16 | Đắk Nông | H37 | Lạng Sơn | H58 | Tiền Giang |
 | H17 | Đà Nẵng | H38 | Lào Cai | H59 | Trà Vinh |
 | H18 | Điện Biên | H39 | Long An | H60 | Tuyên Quang |

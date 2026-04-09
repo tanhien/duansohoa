@@ -101,7 +101,7 @@ OCR cần xác định loại tài liệu trước khi áp dụng bộ trường
 | 14 | `keyword` | Từ khóa | Trích từ trích yếu | String(100) | Tùy chọn | |
 | 15 | `description` | Ghi chú / nơi nhận | Phần "Nơi nhận:" cuối văn bản | String(500) | Tùy chọn | |
 | 16 | `source` | Chiều văn bản | Xác định VB đi (0) hay VB đến (1) | Boolean | Tùy chọn | `0` |
-| 17 | `docOrdinal` | Số thứ tự trong hồ sơ | Lấy từ danh sách import, không OCR | Number | Bắt buộc | `1` |
+| 17 | `docOrdinal` | Số thứ tự trong hồ sơ | **INPUT** – truyền từ Module 1, không OCR (xem Luồng xử lý OCR) | Number | Bắt buộc | `1` |
 
 ### Nhận dạng loại văn bản (typeName → typeDoc)
 

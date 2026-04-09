@@ -16,17 +16,23 @@ Module 1 nhận vào danh sách hồ sơ + file PDF đã scan. OCR sẽ đọc t
 | Tham số | Ý nghĩa | Ví dụ |
 | --- | --- | --- |
 | `filePath` | Đường dẫn file PDF scan trên MinIO/local | `uploads/phong_g09/hs_2025_001/van_ban_001.pdf` |
-| `fileCode` | Mã hồ sơ chứa tài liệu này | `G09.2025.01.001` |
-| `docOrdinal` | Số thứ tự tài liệu trong hồ sơ | `3` |
+| `fileCode` | Mã hồ sơ chứa tài liệu này (dùng để liên kết hồ sơ) | `G09.2025.01.001` |
+| `docOrdinal` | Số thứ tự tài liệu trong hồ sơ (dùng để sắp xếp) | `3` |
+| `mcq` | Mã cơ quan (phần MCQ trong DocCode theo 7197) | `G09.01` |
+| `sttSeq` | Số thứ tự số hoá tuần tự trong hệ thống (6 chữ số) | `000021` |
+| `digitizationDate` | Ngày số hoá (hệ thống tự lấy nếu không truyền) | `20250414` |
+
+> `LV` (loại văn bản) được OCR trích xuất từ `typeName` và map sang viết tắt (xem bảng Bộ B).  
+> `PB` mặc định là `V1` (bản quét gốc). `DocCode` = `{mcq}_{LV}_{sttSeq}_V1`.
 
 ```text
-[fileCode + docOrdinal + filePath]
+[filePath + fileCode + docOrdinal + mcq + sttSeq + digitizationDate]
          ↓
 PDF scan → Phát hiện loại tài liệu → OCR từng trang → Trích xuất trường → Validate → Lưu nháp
-                                                            ↓ thất bại
-                                                       Gắn cờ "cần nhập thủ công"
+                                             ↓ (LV lấy từ typeName)              ↓ thất bại
+                                        DocCode = mcq_LV_sttSeq_V1        Gắn cờ "cần nhập thủ công"
          ↓ output
-[extractedFields + packedFileName + confidenceLevel]
+[extractedFields + docCode + packedFileName + confidenceLevel]
 ```
 
 ---
@@ -250,27 +256,32 @@ Sau khi OCR trích xuất, hệ thống kiểm tra trước khi lưu nháp:
 
 ## Quy tắc đặt tên file đóng gói (`packedFileName`)
 
-Trường `packedFileName` là **địa chỉ tài liệu gốc** – tên file sẽ được dùng khi copy vào thư mục `representations/rep1/data/` trong gói SIP/AIP.
+Trường `packedFileName` là **địa chỉ tài liệu gốc** – tên file sẽ được dùng khi copy vào thư mục `representations/rep1/data/` trong gói SIP/AIP. Tuân theo quy tắc đặt tên tệp số hoá của **7197/BKHCN-CDSQG Mục 2.4b**.
 
 ### Công thức
 
 ```text
-packedFileName = {fileCode}.{docOrdinal:04d}.{ext}
+packedFileName = {DocCode}_{YYYYMMDD}.pdf
+DocCode        = {mcq}_{LV}_{sttSeq}_V1
 ```
 
-| Thành phần | Ý nghĩa | Lấy từ |
-| --- | --- | --- |
-| `fileCode` | Mã hồ sơ (arcFileCode) | Tham số đầu vào từ Module 1 |
-| `docOrdinal` | Số thứ tự tài liệu trong hồ sơ, **4 chữ số, bù 0** | Tham số đầu vào từ Module 1 |
-| `ext` | Phần mở rộng file | Luôn là `pdf` (tài liệu phải chuyển sang PDF/A) |
+| Thành phần | Ý nghĩa | Lấy từ | Ví dụ |
+| --- | --- | --- | --- |
+| `mcq` | Mã cơ quan phân cấp (theo QĐ 20/2020 + QĐ 09/2025) | Tham số đầu vào từ Module 1 | `G09.01` |
+| `LV` | Viết tắt loại văn bản | OCR `typeName` → map sang LV (xem bảng Bộ B) | `QD` |
+| `sttSeq` | Số thứ tự số hoá tuần tự, **6 chữ số, bù 0** | Tham số đầu vào (hệ thống tự cấp) | `000021` |
+| `V1` | Phiên bản (mặc định bản quét gốc) | Cố định `V1` | `V1` |
+| `YYYYMMDD` | Ngày số hoá | Hệ thống tự lấy (hoặc `digitizationDate` truyền vào) | `20250414` |
+
+> `docOrdinal` và `fileCode` vẫn được lưu trong JSON output để liên kết hồ sơ và sắp xếp thứ tự — nhưng **không dùng để đặt tên file**.
 
 ### Ví dụ
 
-| `fileCode` | `docOrdinal` | `packedFileName` |
-| --- | --- | --- |
-| `G09.2025.01.001` | `1` | `G09.2025.01.001.0001.pdf` |
-| `G09.2025.01.001` | `12` | `G09.2025.01.001.0012.pdf` |
-| `BNV.2024.02.005` | `3` | `BNV.2024.02.005.0003.pdf` |
+| `mcq` | `LV` | `sttSeq` | `YYYYMMDD` | `packedFileName` |
+| --- | --- | --- | --- | --- |
+| `G09.01` | `QD` | `000001` | `20250102` | `G09.01_QD_000001_V1_20250102.pdf` |
+| `G09.01` | `CV` | `000021` | `20250102` | `G09.01_CV_000021_V1_20250102.pdf` |
+| `G22` | `QD` | `000009` | `20250414` | `G22_QD_000009_V1_20250414.pdf` |
 
 ### Vị trí trong gói SIP
 
@@ -279,17 +290,17 @@ packedFileName = {fileCode}.{docOrdinal:04d}.{ext}
   representations/
     rep1/
       data/
-        G09.2025.01.001.0001.pdf   ← packedFileName của tài liệu #1
-        G09.2025.01.001.0002.pdf   ← packedFileName của tài liệu #2
-        G09.2025.01.001.0003.pdf   ← packedFileName của tài liệu #3
+        G09.01_QD_000001_V1_20250102.pdf   ← tài liệu #1 trong hồ sơ
+        G09.01_CV_000002_V1_20250102.pdf   ← tài liệu #2 trong hồ sơ
+        G09.01_BB_000003_V1_20250103.pdf   ← tài liệu #3 trong hồ sơ
       metadata/
         descriptive/
-          EAD_doc_G09.2025.01.001.0001.xml
+          EAD_doc_G09.01_QD_000001_V1.xml
         preservation/
           PREMIS_{uuid}.xml
 ```
 
-> **Lý do bù 0 thành 4 chữ số:** Đảm bảo thứ tự sắp xếp tên file theo alphabet = thứ tự tài liệu trong hồ sơ (tối đa 9999 tài liệu/hồ sơ).
+> **Thứ tự trong hồ sơ** được xác định bởi `docOrdinal` (lưu trong JSON và EAD), không phải tên file. Tên file theo DocCode đảm bảo duy nhất toàn hệ thống.
 
 ---
 
@@ -303,7 +314,8 @@ Mỗi file scan sau OCR sinh ra một object JSON nháp:
   "filePath": "uploads/HS001/van_ban_001.pdf",
   "fileCode": "G09.2025.01.001",
   "docOrdinal": 1,
-  "packedFileName": "G09.2025.01.001.0001.pdf",
+  "docCode": "G09.01_QD_000001_V1",
+  "packedFileName": "G09.01_QD_000001_V1_20250102.pdf",
   "docType": "vanban",
   "confidenceLevel": 87,
   "status": "draft",
@@ -378,7 +390,8 @@ phục vụ kết nối, chia sẻ dữ liệu với các bộ, ngành, địa p
 | `mode` | `01` | Không có dấu MẬT/TỐI MẬT | — |
 | `source` | `0` | Văn bản đi (do cơ quan ban hành) | — |
 | `confidenceLevel` | `93` | Trung bình có trọng số các trường | — |
-| **`packedFileName`** | **`G09.2025.01.001.0001.pdf`** | **Tính từ `fileCode` + `docOrdinal` truyền vào** | **—** |
+| **`docCode`** | **`G22_QD_000009_V1`** | **`mcq`(input) + `LV`(OCR) + `sttSeq`(input) + `V1`(mặc định)** | **—** |
+| **`packedFileName`** | **`G22_QD_000009_V1_20250414.pdf`** | **`docCode` + `_` + `digitizationDate` (7197 Mục 2.4b)** | **—** |
 
 > **Ghi chú regex đặc biệt:** Số văn bản dạng `09/2025/QĐ-TTg` có 3 phần ngăn cách bởi `/`.  
 > Pattern mở rộng cần bắt cả trường hợp này:
@@ -396,7 +409,8 @@ RE_CODE_EXT = r'(?:Số[:\s]*)?(\d+)/(\d{4})/([A-ZĐÀÁÂÃÈÉÊÌÍÒÓÔÕÙ
   "filePath": "uploads/phong_g09/hs_2025_001/09-2025-QD-TTg.pdf",
   "fileCode": "G09.2025.01.001",
   "docOrdinal": 1,
-  "packedFileName": "G09.2025.01.001.0001.pdf",
+  "docCode": "G22_QD_000009_V1",
+  "packedFileName": "G22_QD_000009_V1_20250414.pdf",
   "docType": "vanban",
   "confidenceLevel": 93,
   "status": "draft",

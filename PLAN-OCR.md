@@ -29,22 +29,22 @@ Nhận file PDF scan + tham số định danh, trích xuất metadata để:
 
 ## Bộ A – Trang bìa hồ sơ (`type = 0`)
 
-| Trường | Tên hiển thị | Kiểu | Bắt buộc | Ví dụ |
-| --- | --- | --- | --- | --- |
-| `fileCode` | Mã hồ sơ | String(50) | Bắt buộc | `G09.2021.01.001` |
-| `title` | Tiêu đề hồ sơ | String(500) | Bắt buộc | `Tập quyết định nhân sự năm 2021` |
-| `maintenance` | Thời hạn lưu trữ | String(2) | Bắt buộc | `01` |
-| `startDate` | Ngày bắt đầu | Date `DD/MM/YYYY` | Bắt buộc | `01/01/2021` |
-| `endDate` | Ngày kết thúc | Date `DD/MM/YYYY` | Bắt buộc | `31/12/2021` |
-| `totalDoc` | Tổng số tài liệu | Number | Tùy chọn | `15` |
-| `numberOfPaper` | Số tờ | Number | Tùy chọn | `120` |
-| `numberOfPage` | Số trang | Number | Tùy chọn | `240` |
-| `language` | Ngôn ngữ | String(2) | Tùy chọn | `01` |
-| `mode` | Chế độ sử dụng | String(2) | Tùy chọn | `01` |
-| `keyword` | Từ khóa | String(200) | Tùy chọn | `nhân sự; quyết định` |
-| `inforSign` | Ký hiệu thông tin | String(50) | Tùy chọn | `BNV.2021.HS001` |
-| `paperFileCode` | Mã hồ sơ giấy gốc | String(50) | Tùy chọn | `HOP-001` |
-| `description` | Ghi chú | String(2000) | Tùy chọn | |
+| Trường | Tên hiển thị | Kiểu | Bắt buộc | Mô tả | Ví dụ |
+| --- | --- | --- | --- | --- | --- |
+| `fileCode` | Mã hồ sơ | String(50) | Bắt buộc | Mã định danh hồ sơ theo hệ thống, dạng `{mcq}.{năm}.{đơn vị}.{stt}` | `G09.2021.01.001` |
+| `title` | Tiêu đề hồ sơ | String(500) | Bắt buộc | Tiêu đề đầy đủ của hồ sơ, thường in trên bìa | `Tập quyết định nhân sự năm 2021` |
+| `maintenance` | Thời hạn lưu trữ | String(2) | Bắt buộc | Thời hạn bảo quản, tra bảng mã bên dưới | `01` |
+| `startDate` | Ngày bắt đầu | Date `DD/MM/YYYY` | Bắt buộc | Ngày của văn bản đầu tiên trong hồ sơ | `01/01/2021` |
+| `endDate` | Ngày kết thúc | Date `DD/MM/YYYY` | Bắt buộc | Ngày của văn bản cuối cùng trong hồ sơ | `31/12/2021` |
+| `totalDoc` | Tổng số tài liệu | Number | Tùy chọn | Tổng số văn bản/tài liệu trong hồ sơ | `15` |
+| `numberOfPaper` | Số tờ | Number | Tùy chọn | Tổng số tờ giấy vật lý | `120` |
+| `numberOfPage` | Số trang | Number | Tùy chọn | Tổng số trang (= 2 × số tờ nếu in 2 mặt) | `240` |
+| `language` | Ngôn ngữ | String(2) | Tùy chọn | Mã ngôn ngữ: `01` Tiếng Việt, `02` Tiếng Anh, `03` Tiếng Pháp | `01` |
+| `mode` | Chế độ sử dụng | String(2) | Tùy chọn | Mức tiếp cận: `01` Thông thường, `02` Hạn chế, `03` Mật, `04` Tối mật, `05` Tuyệt mật | `01` |
+| `keyword` | Từ khóa | String(200) | Tùy chọn | Từ khóa tìm kiếm, phân cách bằng dấu chấm phẩy | `nhân sự; quyết định` |
+| `inforSign` | Ký hiệu thông tin | String(50) | Tùy chọn | Ký hiệu phân loại nội bộ của cơ quan, thường không có trên bìa scan | `BNV.2021.HS001` |
+| `paperFileCode` | Mã hồ sơ giấy gốc | String(50) | Tùy chọn | Mã hồ sơ ghi trên bìa giấy gốc trước khi số hóa | `HOP-001` |
+| `description` | Ghi chú | String(2000) | Tùy chọn | Thông tin bổ sung không thuộc các trường trên | |
 
 **Mã `maintenance`:**
 
@@ -62,23 +62,23 @@ Nhận file PDF scan + tham số định danh, trích xuất metadata để:
 
 ## Bộ B – Văn bản hành chính (`type = 1`)
 
-| Trường | Tên hiển thị | Kiểu | Bắt buộc | Ví dụ |
-| --- | --- | --- | --- | --- |
-| `organName` | Tên cơ quan ban hành | String(200) | Bắt buộc | `BỘ NỘI VỤ` |
-| `codeNumber` | Số văn bản | String(11) | Bắt buộc | `123` |
-| `codeNotation` | Ký hiệu văn bản | String(30) | Bắt buộc | `QĐ-BNV` |
-| `issuedDate` | Ngày ban hành | Date `DD/MM/YYYY` | Bắt buộc | `15/03/2021` |
-| `typeName` | Loại văn bản | String(100) | Bắt buộc | `QUYẾT ĐỊNH` |
-| `typeDoc` | Mã loại văn bản | String(2) | Bắt buộc | `02` |
-| `subject` | Trích yếu nội dung | String(500) | Bắt buộc | `Về việc bổ nhiệm Vụ trưởng` |
-| `autograph` | Người ký | String(200) | Tùy chọn | `Nguyễn Văn A` |
-| `process` | Chức vụ người ký | String(200) | Tùy chọn | `BỘ TRƯỞNG` |
-| `pageAmount` | Số trang | Number(4) | Tùy chọn | `3` |
-| `language` | Ngôn ngữ | String(2) | Tùy chọn | `01` |
-| `mode` | Chế độ sử dụng | String(2) | Tùy chọn | `01` |
-| `keyword` | Từ khóa | String(100) | Tùy chọn | |
-| `description` | Ghi chú / nơi nhận | String(500) | Tùy chọn | |
-| `source` | Chiều văn bản | Boolean | Tùy chọn | `0` (VB đi) |
+| Trường | Tên hiển thị | Kiểu | Bắt buộc | Mô tả | Ví dụ |
+| --- | --- | --- | --- | --- | --- |
+| `organName` | Tên cơ quan ban hành | String(200) | Bắt buộc | Tên cơ quan hoặc chức danh ban hành, in ở góc trên trái văn bản | `BỘ NỘI VỤ` |
+| `codeNumber` | Số văn bản | String(11) | Bắt buộc | Phần số trong số ký hiệu, trích từ `123/QĐ-BNV` → `123` | `123` |
+| `codeNotation` | Ký hiệu văn bản | String(30) | Bắt buộc | Phần ký hiệu sau dấu `/`, trích từ `123/QĐ-BNV` → `QĐ-BNV` | `QĐ-BNV` |
+| `issuedDate` | Ngày ban hành | Date `DD/MM/YYYY` | Bắt buộc | Ngày ký ban hành văn bản | `15/03/2021` |
+| `typeName` | Loại văn bản | String(100) | Bắt buộc | Tên loại văn bản in trên đầu trang, tra bảng mapping bên dưới | `QUYẾT ĐỊNH` |
+| `typeDoc` | Mã loại văn bản | String(2) | Bắt buộc | Mã số tương ứng với `typeName`, sinh tự động từ bảng mapping | `02` |
+| `subject` | Trích yếu nội dung | String(500) | Bắt buộc | Nội dung tóm tắt, thường sau cụm "V/v" hoặc "Về việc" | `Về việc bổ nhiệm Vụ trưởng` |
+| `autograph` | Người ký | String(200) | Tùy chọn | Họ tên người ký ghi dưới chữ ký ở cuối văn bản | `Nguyễn Văn A` |
+| `process` | Chức vụ người ký | String(200) | Tùy chọn | Chức vụ/chức danh của người ký, in trên họ tên | `BỘ TRƯỞNG` |
+| `pageAmount` | Số trang | Number(4) | Tùy chọn | Số trang của văn bản này (không phải toàn bộ hồ sơ) | `3` |
+| `language` | Ngôn ngữ | String(2) | Tùy chọn | Mã ngôn ngữ: `01` Tiếng Việt, `02` Tiếng Anh, `03` Tiếng Pháp | `01` |
+| `mode` | Chế độ sử dụng | String(2) | Tùy chọn | Mức tiếp cận, nhận dạng từ dấu đóng dấu mật trên văn bản, mặc định `01` | `01` |
+| `keyword` | Từ khóa | String(100) | Tùy chọn | Từ khóa tìm kiếm, phân cách bằng dấu chấm phẩy | |
+| `description` | Ghi chú / nơi nhận | String(500) | Tùy chọn | Danh sách nơi nhận hoặc ghi chú cuối văn bản | |
+| `source` | Chiều văn bản | Boolean | Tùy chọn | `0` = văn bản đi (cơ quan ban hành), `1` = văn bản đến (cơ quan nhận) | `0` |
 
 **Mapping `typeName` → `typeDoc`:**
 
@@ -146,15 +146,11 @@ Một object JSON thống nhất cho cả Bộ A và Bộ B. Các trường khô
 
 ```json
 {
-  "fileId": "uuid-...",
   "file": "uploads/.../van_ban_001.pdf",
   "record_id": 1,
   "type": 0,
   "docCode": "G09.01_QD_000001_V1",
-  "packedFileName": "G09.01_QD_000001_V1_20250102.pdf",
   "confidenceLevel": 87,
-  "status": "draft",
-  "needsReview": false,
 
   "extractedFields": {
 
@@ -185,10 +181,7 @@ Một object JSON thống nhất cho cả Bộ A và Bộ B. Các trường khô
     "keyword":        null,
     "inforSign":      null,
     "description":    null
-  },
-
-  "fieldConfidence": {},
-  "flaggedFields": []
+  }
 }
 ```
 
@@ -198,15 +191,11 @@ Một object JSON thống nhất cho cả Bộ A và Bộ B. Các trường khô
 
 ```json
 {
-  "fileId": "uuid-B1C2D3E4-F5A6-7890-BCDE-F12345678901",
   "file": "uploads/g09/hs_2021_001/bia_ho_so.pdf",
   "record_id": 0,
   "type": 0,
   "docCode": null,
-  "packedFileName": null,
   "confidenceLevel": 91,
-  "status": "draft",
-  "needsReview": false,
 
   "extractedFields": {
     "fileCode":       "G09.2021.01.001",
@@ -236,17 +225,7 @@ Một object JSON thống nhất cho cả Bộ A và Bộ B. Các trường khô
     "keyword":        "nhân sự; quyết định",
     "inforSign":      "BNV.2021.HS001",
     "description":    null
-  },
-
-  "fieldConfidence": {
-    "fileCode": 95,
-    "title": 93,
-    "maintenance": 97,
-    "startDate": 90,
-    "endDate": 90,
-    "totalDoc": 85
-  },
-  "flaggedFields": []
+  }
 }
 ```
 
@@ -256,15 +235,11 @@ Một object JSON thống nhất cho cả Bộ A và Bộ B. Các trường khô
 
 ```json
 {
-  "fileId": "uuid-A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
   "file": "uploads/g09/hs_2025_001/09-2025-QD-TTg.pdf",
   "record_id": 1,
   "type": 1,
   "docCode": "G22_QD_000009_V1",
-  "packedFileName": "G22_QD_000009_V1_20250414.pdf",
   "confidenceLevel": 93,
-  "status": "draft",
-  "needsReview": false,
 
   "extractedFields": {
     "fileCode":       null,
@@ -294,18 +269,6 @@ Một object JSON thống nhất cho cả Bộ A và Bộ B. Các trường khô
     "keyword":        null,
     "inforSign":      null,
     "description":    null
-  },
-
-  "fieldConfidence": {
-    "organName":    98,
-    "codeNumber":   99,
-    "codeNotation": 99,
-    "issuedDate":   97,
-    "typeName":     99,
-    "subject":      91,
-    "autograph":    88,
-    "process":      85
-  },
-  "flaggedFields": []
+  }
 }
 ```

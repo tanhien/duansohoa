@@ -2,35 +2,26 @@
 
 ## Mục tiêu
 
-Module 1 nhận vào danh sách hồ sơ + file PDF đã scan. OCR sẽ đọc từng file, trích xuất các trường metadata để:
-1. Tự động điền vào form chỉnh lý (Module 2), giảm nhập liệu thủ công
-2. Sinh EAD.xml (Module 3) với dữ liệu chính xác
-3. Phục vụ đóng gói SIP/AIP (Module 4)
+Nhận vào danh sách hồ sơ + file PDF đã scan. OCR sẽ đọc từng file, trích xuất các trường metadata để:
+1. Tự động điền vào form chỉnh lý, giảm nhập liệu thủ công
+2. Phục vụ đóng gói SIP/AIP
 
 ---
 
 ## Luồng xử lý OCR
 
-**Tham số đầu vào khi gọi OCR** (truyền từ Module 1, không tự OCR lấy):
+**Tham số đầu vào khi gọi OCR**:
 
 | Tham số | Ý nghĩa | Ví dụ |
 | --- | --- | --- |
-| `filePath` | Đường dẫn file PDF scan trên MinIO/local | `uploads/phong_g09/hs_2025_001/van_ban_001.pdf` |
-| `fileCode` | Mã hồ sơ chứa tài liệu này (dùng để liên kết hồ sơ) | `G09.2025.01.001` |
-| `docOrdinal` | Số thứ tự tài liệu trong hồ sơ (dùng để sắp xếp) | `3` |
-| `mcq` | Mã cơ quan (phần MCQ trong DocCode theo 7197) | `G09.01` |
-| `sttSeq` | Số thứ tự số hoá tuần tự trong hệ thống (6 chữ số) | `000021` |
-| `digitizationDate` | Ngày số hoá (hệ thống tự lấy nếu không truyền) | `20250414` |
-
-> `LV` (loại văn bản) được OCR trích xuất từ `typeName` và map sang viết tắt (xem bảng Bộ B).  
-> `PB` mặc định là `V1` (bản quét gốc). `DocCode` = `{mcq}_{LV}_{sttSeq}_V1`.
+| `file` | Đường dẫn file PDF scan trên MinIO/local | `uploads/phong_g09/hs_2025_001/van_ban_001.pdf` |
+| `record_id` | Số thứ tự tài liệu trong hồ sơ (dùng để sắp xếp) | `3` |
+| `type` | Loại tài liệu để phân loại(0: Trang bìa hồ sơ - 1: Văn bản hành chính) | `0` |
 
 ```text
-[filePath + fileCode + docOrdinal + mcq + sttSeq + digitizationDate]
+[file +record_id]
          ↓
-PDF scan → Phát hiện loại tài liệu → OCR từng trang → Trích xuất trường → Validate → Lưu nháp
-                                             ↓ (LV lấy từ typeName)              ↓ thất bại
-                                        DocCode = mcq_LV_sttSeq_V1        Gắn cờ "cần nhập thủ công"
+PDF scan → Phát hiện loại tài liệu → OCR từng trang → Trích xuất trường                                             
          ↓ output
 [extractedFields + docCode + packedFileName + confidenceLevel]
 ```
@@ -45,8 +36,6 @@ OCR cần xác định loại tài liệu trước khi áp dụng bộ trường
 |---|---|---|
 | **Trang bìa hồ sơ** | Chứa "HỒ SƠ", "MỤC LỤC", tiêu đề hồ sơ, thời hạn lưu trữ | Bộ A – Hồ sơ |
 | **Văn bản hành chính** | Có số ký hiệu dạng `123/QĐ-BNV`, có quốc hiệu, có chữ ký | Bộ B – Văn bản |
-| **Ảnh / phim âm bản** | File JPEG/TIFF, hoặc PDF 1 trang toàn ảnh | Bộ C – Ảnh |
-| **Ghi âm / ghi hình** | File MP3/MP4/AVI hoặc metadata nhúng | Bộ D – Media |
 
 ---
 
@@ -284,14 +273,6 @@ phục vụ kết nối, chia sẻ dữ liệu với các bộ, ngành, địa p
 | `confidenceLevel` | `93` | Trung bình có trọng số các trường | — |
 | **`docCode`** | **`G22_QD_000009_V1`** | **`mcq`(input) + `LV`(OCR) + `sttSeq`(input) + `V1`(mặc định)** | **—** |
 | **`packedFileName`** | **`G22_QD_000009_V1_20250414.pdf`** | **`docCode` + `_` + `digitizationDate` (7197 Mục 2.4b)** | **—** |
-
-> **Ghi chú regex đặc biệt:** Số văn bản dạng `09/2025/QĐ-TTg` có 3 phần ngăn cách bởi `/`.  
-> Pattern mở rộng cần bắt cả trường hợp này:
-
-```python
-RE_CODE_EXT = r'(?:Số[:\s]*)?(\d+)/(\d{4})/([A-ZĐÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂẮẶĐÊỐỜỢƯỚỮ\-]+)'
-# group(1) = codeNumber ("09"), group(2) = năm ("2025"), group(3) = codeNotation ("QĐ-TTg")
-```
 
 ### JSON output
 

@@ -576,19 +576,6 @@ Mỗi file METS.xml gồm các phần tử:
 
 ---
 
-## Thứ tự triển khai (6 Sprints)
-
-| Sprint | Nội dung |
-|---|---|
-| **Sprint 1** | DB schema (phông/hồ sơ/tài liệu) + project setup + Import module |
-| **Sprint 2** | Module chỉnh lý: CRUD hồ sơ, tài liệu, phân loại theo loại |
-| **Sprint 3** | Sinh XML: EAD + PREMIS + METS + tính SHA-256 |
-| **Sprint 4** | Đóng gói ZIP + Validate XSD + kiểm tra integrity |
-| **Sprint 5** | Quy trình thu nộp, phê duyệt, quản lý trạng thái SIP |
-| **Sprint 6** | Chuyển đổi SIP→AIP + Bảo quản + Backup |
-
----
-
 ## Verification (kiểm thử end-to-end)
 
 1. Tạo 1 hồ sơ test với 3 file PDF → đóng gói SIP_hoso → giải nén kiểm tra cấu trúc thư mục
